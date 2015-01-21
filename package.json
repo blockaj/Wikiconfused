@@ -1,0 +1,11 @@
+{
+	"name": "Wikiconfused",
+	"description": "A twitter bot that confuses wikipedia articles",
+	"version": "0.0.0",
+	"dependencies": {
+		"lodash": "*",
+		"twitter": "*",
+		"request": "*",
+		"cheerio": "*"
+	}
+}
