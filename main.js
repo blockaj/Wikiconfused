@@ -8,11 +8,18 @@ var request = require('request'),
 
 
 var client = new Twitter({
+
     consumer_key: 'vCb2Cf16cyrNt13Wd76LfsXyV',
     consumer_secret: '3fGDJythkSOG29ahBXEyLN4t5Z64GTBg2grK2dpy8WzwUXWyMU',
     access_token_key: '2990681327-V9qAnFXpCiqtpaUF97IwahfMmbpfxHgvRZnq1Dm',
     access_token_secret: 'xusyFmpjZX3Y5OPkqvvIjnFUEKEovNxkkNXAID7Qi8FEI'
 });
+
+    consumer_key: 'CONSUMER_KEY',
+    consumer_secret: 'CONSUMER_SECRET',
+    access_token_key: 'ACCESS_TOKEN_KEY',
+    access_token_secret: 'ACCESS_TOKEN_SECRET'
+})
 
 parentheses = VerEx().find('(').anything().then(')');
 setInterval(function(){
