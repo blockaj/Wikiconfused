@@ -15,12 +15,6 @@ var client = new Twitter({
     access_token_secret: 'xusyFmpjZX3Y5OPkqvvIjnFUEKEovNxkkNXAID7Qi8FEI'
 });
 
-    consumer_key: 'CONSUMER_KEY',
-    consumer_secret: 'CONSUMER_SECRET',
-    access_token_key: 'ACCESS_TOKEN_KEY',
-    access_token_secret: 'ACCESS_TOKEN_SECRET'
-})
-
 parentheses = VerEx().find('(').anything().then(')');
 setInterval(function(){
     console.log('Running...');
@@ -30,7 +24,7 @@ setInterval(function(){
             var randomPageTitle = $('h1#firstHeading').text();
             randomPageTitle = randomPageTitle.split(' ').join('_');
             console.log(randomPageTitle);
-            return request.get('http://en.wikipedia.org/wiki/Special:Random', function(err, response, body) {
+            request.get('http://en.wikipedia.org/wiki/Special:Random', function(err, response, body) {
                 if (!err && response.statusCode === 200) {
                     $ = cheerio.load(body);
                     var firstPara = $('p').text();
@@ -39,14 +33,28 @@ setInterval(function(){
                     randomPageTitle = randomPageTitle.split('_').join(' ');
                     withoutParenth = withoutParenth.replace(pageTitle, randomPageTitle);
                     for (i = 0; i < withoutParenth.length; i++) {
-                        if (withoutParenth[i] == '.') {
+                        if (withoutParenth[i] == '.' && withoutParenth[i+1] == ' ') {
                             console.log(typeof(withoutParenth));
                             withoutParenth = withoutParenth.substring(0, i+1);
                             break;
                         }
                     }
-                    client.post('statuses/update', { status: withoutParenth }, function(err, params, response){
+                    var mayReferTo = withoutParenth.indexOf("may refer to:");
+                    var firstSentence;
+                    if (mayReferTo > -1) {
+                        request.get('http://en.wikipedia.org/Special:Random', function(err, response, body){
+                            $ = cheerio.load(body);
+                            var firstPara = $('p').text();
+                            for (i = 0; i < firstPara.length; i++) {
+                                if (firstPara[i] == '.' && firstPara[i+1] == ' ') {
+                                    firstSentence = firstPara.substring(0, i+1);
+                                }
+                            }
+                        });
+                        withoutParenth = withoutParenth.concat(firstSentence);
+                    }
 
+                    client.post('statuses/update', { status: withoutParenth }, function(err, params, response){
                     });
                     return console.log(withoutParenth);
                 }
