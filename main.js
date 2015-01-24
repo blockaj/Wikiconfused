@@ -2,9 +2,7 @@ var request = require('request'),
     cheerio = require('cheerio'),
     _ = require('lodash'),
     VerEx = require('verbal-expressions'),
-    Twitter = require('twitter'),
-    express = require('express'),
-    app = express();
+    Twitter = require('twitter');
 
 
 var client = new Twitter({
