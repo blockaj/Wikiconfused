@@ -5,10 +5,8 @@ var request = require('request'),
     Twitter = require('twitter'),
     TwitterCredentials = require('./config.json');
 
-
-var client = new Twitter({
-    TwitterCredentials
-});
+//TwitterCredentials should be a object stored in config.json. See README for formatting"
+var client = new Twitter(TwitterCredentials);
 
 parentheses = VerEx().find('(').anything().then(')');
 setInterval(function(){
