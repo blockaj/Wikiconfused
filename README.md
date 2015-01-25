@@ -10,7 +10,7 @@ with the subject of another randomly generated article.
 *	Grunt
 
 ##Config
-`config.json`:
+`config.json` is a file that needs to be created on before starting the bot. It stores all of your Twitter credentials and should look like this :
 ```javascript
 {
 	"consumer_key": "CONSUMER_KEY",
