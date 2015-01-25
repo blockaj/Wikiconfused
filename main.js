@@ -10,6 +10,9 @@ var client = new Twitter({
 });
 
 var parentheses = VerEx().find('(').anything().then(')');
+
+
+setInterval(function(){
     console.log('Running...');
     request.get('http://en.wikipedia.org/wiki/Special:Random', function(err, response, body) {
         if (!err && response.statusCode === 200) {
