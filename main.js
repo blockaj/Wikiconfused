@@ -2,14 +2,12 @@ var request = require('request'),
     cheerio = require('cheerio'),
     _ = require('lodash'),
     VerEx = require('verbal-expressions'),
-    Twitter = require('twitter');
+    Twitter = require('twitter'),
+    TwitterCredentials = require('./config.json');
 
 
 var client = new Twitter({
-    consumer_key: 'CONSUMER_KEY',
-    consumer_secret: 'CONSUMER_SECRET',
-    access_token_key: 'ACCESS_TOKEN_KEY',
-    access_token_secret: 'ACCESS_TOKEN_SECRET'
+    TwitterCredentials
 });
 
 parentheses = VerEx().find('(').anything().then(')');
