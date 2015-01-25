@@ -2,26 +2,20 @@ var request = require('request'),
     cheerio = require('cheerio'),
     _ = require('lodash'),
     VerEx = require('verbal-expressions'),
-    Twitter = require('twitter');
-
+    Twitter = require('twitter'),
+    TwitterCredentials = require('./config.json');
 
 var client = new Twitter({
-
-    consumer_key: 'vCb2Cf16cyrNt13Wd76LfsXyV',
-    consumer_secret: '3fGDJythkSOG29ahBXEyLN4t5Z64GTBg2grK2dpy8WzwUXWyMU',
-    access_token_key: '2990681327-V9qAnFXpCiqtpaUF97IwahfMmbpfxHgvRZnq1Dm',
-    access_token_secret: 'xusyFmpjZX3Y5OPkqvvIjnFUEKEovNxkkNXAID7Qi8FEI'
+    TwitterCredentials
 });
 
-parentheses = VerEx().find('(').anything().then(')');
-setInterval(function(){
+var parentheses = VerEx().find('(').anything().then(')');
     console.log('Running...');
     request.get('http://en.wikipedia.org/wiki/Special:Random', function(err, response, body) {
         if (!err && response.statusCode === 200) {
             var $ = cheerio.load(body);
             var randomPageTitle = $('h1#firstHeading').text();
             randomPageTitle = randomPageTitle.split(' ').join('_');
-            console.log(randomPageTitle);
             request.get('http://en.wikipedia.org/wiki/Special:Random', function(err, response, body) {
                 if (!err && response.statusCode === 200) {
                     $ = cheerio.load(body);
@@ -32,7 +26,6 @@ setInterval(function(){
                     withoutParenth = withoutParenth.replace(pageTitle, randomPageTitle);
                     for (i = 0; i < withoutParenth.length; i++) {
                         if (withoutParenth[i] == '.' && withoutParenth[i+1] == ' ') {
-                            console.log(typeof(withoutParenth));
                             withoutParenth = withoutParenth.substring(0, i+1);
                             break;
                         }
@@ -46,20 +39,19 @@ setInterval(function(){
                             for (i = 0; i < firstPara.length; i++) {
                                 if (firstPara[i] == '.' && firstPara[i+1] == ' ') {
                                     firstSentence = firstPara.substring(0, i+1);
+                                    console.log(firstSentence);
                                 }
                             }
                         });
                         withoutParenth = withoutParenth.concat(firstSentence);
                     }
-
-                    client.post('statuses/update', { status: withoutParenth }, function(err, params, response){
-                    });
+                    //client.post('statuses/update', { status: withoutParenth }, function(err, params, response){
+                    //});
                     return console.log(withoutParenth);
                 }
             });
         }
     });
-}, 900000);
 
 
 wordComparison = function(title, text) {
