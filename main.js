@@ -5,7 +5,7 @@ var request = require('request'),
     Twitter = require('twitter'),
     TwitterCredentials = require('./config.json');
 
-//TwitterCredentials should be a object stored in config.json. See README for formatting"
+//TwitterCredentials should be an object stored in config.json. See README for formatting"
 var client = new Twitter(TwitterCredentials);
 
 parentheses = VerEx().find('(').anything().then(')');
