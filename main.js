@@ -5,9 +5,7 @@ var request = require('request'),
     Twitter = require('twitter'),
     TwitterCredentials = require('./config.json');
 
-var client = new Twitter({
-    TwitterCredentials
-});
+var client = new Twitter(TwitterCredentials);
 
 var parentheses = VerEx().find('(').anything().then(')');
 
