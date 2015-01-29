@@ -3,6 +3,7 @@ var request = require('request'),
     _ = require('lodash'),
     VerEx = require('verbal-expressions'),
     Twitter = require('twitter'),
+    colors = require('colors');
     TwitterCredentials = require('./config.json'),
     RANDOM_ARTICLE_ADDRESS = 'http://en.wikipedia.org/wiki/Special:Random';
 
@@ -10,29 +11,42 @@ var request = require('request'),
 var client = new Twitter(TwitterCredentials);
 
 parentheses = VerEx().find('(').anything().then(')');
-setInterval(function(){
+brackets = VerEx().find('[').anything().then(']');
+abbreviations = VerEx().find('Mr').
+                        maybe('s').
+                        or('St').
+                        or('Ms').
+                        then('.');
+lists = VerEx().find('list').or('may refer to');
+console.log(parentheses._source, brackets._source, abbreviations._source);
     console.log('Running...');
-    request.get('http://en.wikipedia.org/wiki/Special:Random', function(err, response, body) {
+    request.get(RANDOM_ARTICLE_ADDRESS, function(err, response, body) {
         if (!err && response.statusCode === 200) {
             var $ = cheerio.load(body);
             var randomPageTitle = $('h1#firstHeading').text();
             randomPageTitle = randomPageTitle.split(' ').join('_');
-            console.log(randomPageTitle);
-            request.get('http://en.wikipedia.org/wiki/Special:Random', function(err, response, body) {
+            request.get(RANDOM_ARTICLE_ADDRESS, function(err, response, body) {
                 if (!err && response.statusCode === 200) {
                     $ = cheerio.load(body);
-                    var firstPara = $('p').text();
+                    var firstPara = $('p').first().text();
+                    console.log(firstPara);
                     var pageTitle = $('p b').text();
-                    var withoutParenth = firstPara.replace(parentheses, '');
+                    var purePara = firstPara;
                     randomPageTitle = randomPageTitle.split('_').join(' ');
-                    withoutParenth = withoutParenth.replace(pageTitle, randomPageTitle);
-                    for (i = 0; i < withoutParenth.length; i++) {
-                        if (withoutParenth[i] == '.') {
-                            console.log(typeof(withoutParenth));
-                            withoutParenth = withoutParenth.substring(0, i+1);
-                            break;
-                        }
+                    purePara = purePara.replace(pageTitle, randomPageTitle);
+                    purePara = purePara.replace(parentheses, '');
+                    purePara = purePara.replace(brackets, '');
+                    if (purePara.match(lists)) {
+                        request.get(RANDOM_ARTICLE_ADDRESS, function(err, response, body) {
+                            if (!err && response.statusCode === 200) {
+                                var $ = cheerio.load(body);
+                                var anotherPara = $('p').first().text();
+                                console.log(anotherPara);
+                                purePara = purePara.concat(anotherPara);
+                            }
+                        });
                     }
+                    purePara = getSentence(purePara, 0);
                     //client.post('statuses/update', { status: purePara }, function(err, params, response){
                     //}); 
                     //fs.appendFile('output.txt', purePara + '\n', function(err){
@@ -40,9 +54,25 @@ setInterval(function(){
                     //        console.log('Error: ' + err);
                     //    }
                     //});
-                    return console.log(purePara);
                 }
             }); 
         }
     });  
-}, 90000);
+
+
+
+function getSentence(bodyText, index) {
+    var returnValue;
+    if (bodyText[index] == '.' && bodyText[index + 1] == ' ' || bodyText[index+1] == VerEx().endOfLine()) {  
+        lastThreeLetters = bodyText.substring(index-4, index+1);
+        if (!lastThreeLetters.match(abbreviations)) {
+            returnValue = bodyText.substring(0, index+1);
+        } 
+    } else {
+        index++;
+        getSentence(bodyText, index);
+    }
+    if (returnValue !== undefined)
+        console.log('Sentence: '.red.bold + returnValue.bold);
+    return returnValue;
+}
