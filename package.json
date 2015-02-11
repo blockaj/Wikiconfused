@@ -7,7 +7,6 @@
 		"twitter": "*",
 		"request": "*",
 		"cheerio": "*",
-		"express": "*",
-		"nunjucks": "*"
+		"async": "*"
 	}
 }
